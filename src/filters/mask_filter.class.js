@@ -28,12 +28,14 @@
      * @param {Object} [options] Options object
      * @param {fabric.Image} [options.mask] Mask image object
      * @param {Number} [options.channel=0] Rgb channel (0, 1, 2 or 3)
+     * @param {String} [options.size=false] Auto Size  
      */
     initialize: function(options) {
       options = options || { };
 
       this.mask = options.mask;
       this.channel = [ 0, 1, 2, 3 ].indexOf(options.channel) > -1 ? options.channel : 0;
+      this.size = options.size || false;
     },
 
     /**
@@ -52,12 +54,12 @@
           i,
           iLen = imageData.width * imageData.height * 4;
 
-      maskCanvasEl.width = maskEl.width;
-      maskCanvasEl.height = maskEl.height;
+      maskCanvasEl.width = ('auto' == this.size) ?  canvasEl.width : maskEl.width;
+      maskCanvasEl.height = ('auto' == this.size) ? canvasEl.width : maskEl.height;
 
-      maskCanvasEl.getContext('2d').drawImage(maskEl, 0, 0, maskEl.width, maskEl.height);
+      maskCanvasEl.getContext('2d').drawImage(maskEl, 0, 0, maskCanvasEl.width, maskCanvasEl.height);
 
-      var maskImageData = maskCanvasEl.getContext('2d').getImageData(0, 0, maskEl.width, maskEl.height),
+      var maskImageData = maskCanvasEl.getContext('2d').getImageData(0, 0, maskCanvasEl.width, maskCanvasEl.height),
           maskData = maskImageData.data;
 
       for (i = 0; i < iLen; i += 4) {
@@ -74,7 +76,8 @@
     toObject: function() {
       return extend(this.callSuper('toObject'), {
         mask: this.mask.toObject(),
-        channel: this.channel
+        channel: this.channel,
+        size: this.size
       });
     }
   });
